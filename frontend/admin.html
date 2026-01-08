@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Admin Dashboard - shifa.ai</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Material Symbols -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2bee9d",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#10221a",
+                        "surface-dark": "#1a332a",
+                    },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-gray-100 p-6 min-h-screen">
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-3xl">admin_panel_settings</span>
+                <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+            </div>
+            <a href="/" class="text-sm font-medium hover:text-primary transition-colors">Back to Home</a>
+        </div>
+
+        <!-- content -->
+        <div
+            class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+            <div
+                class="p-6 border-b border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <h2 class="text-lg font-bold">User Management</h2>
+                <div class="relative w-full sm:w-64">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[20px]">search</span>
+                    <input type="text" id="searchInput" placeholder="Search users..."
+                        class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-black/20 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead
+                        class="bg-gray-50 dark:bg-black/20 text-gray-500 font-medium border-b border-gray-200 dark:border-gray-800">
+                        <tr>
+                            <th class="px-6 py-4">ID</th>
+                            <th class="px-6 py-4">Name</th>
+                            <th class="px-6 py-4">Gender</th>
+                            <th class="px-6 py-4">Age</th>
+                            <th class="px-6 py-4 text-center">Questions</th>
+                            <th class="px-6 py-4">Joined</th>
+                            <th class="px-6 py-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody" class="divide-y divide-gray-100 dark:divide-gray-800">
+                        <!-- Rows injected here -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="loadingState" class="p-8 text-center text-gray-500">
+                <span class="material-symbols-outlined animate-spin text-3xl mb-2">sync</span>
+                <p>Loading users...</p>
+            </div>
+            <div id="emptyState" class="hidden p-8 text-center text-gray-500">
+                <p>No users found.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        const tableBody = document.getElementById('userTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const loadingState = document.getElementById('loadingState');
+        const emptyState = document.getElementById('emptyState');
+
+        let allUsers = [];
+
+        async function fetchUsers() {
+            try {
+                const users = await apiRequest('/admin/users');
+                allUsers = users;
+                renderUsers(users);
+                loadingState.classList.add('hidden');
+            } catch (error) {
+                loadingState.innerHTML = `<p class="text-red-500">Error loading users: ${error.message}</p>`;
+            }
+        }
+
+        function renderUsers(users) {
+            tableBody.innerHTML = '';
+
+            if (users.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.className = "hover:bg-gray-50 dark:hover:bg-white/5 transition-colors";
+
+                const joinedDate = new Date(user.created_at).toLocaleDateString([], {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
+
+                row.innerHTML = `
+                    <td class="px-6 py-4 text-gray-500 font-mono text-xs">#${user.id}</td>
+                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">${user.name}</td>
+                    <td class="px-6 py-4 capitalize">${user.gender}</td>
+                    <td class="px-6 py-4">${user.age}</td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.question_count >= 10
+                        ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                        : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                    }">
+                            ${user.question_count} / 10
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-500">${joinedDate}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="deleteUser(${user.id}, '${user.name}')" 
+                            class="text-gray-400 hover:text-red-600 transition-colors p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/10">
+                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        async function deleteUser(id, name) {
+            if (!confirm(`Are you sure you want to delete user "${name}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                // Optimistic update
+                const row = Array.from(tableBody.children).find(tr => tr.innerHTML.includes(`#${id}`));
+                if (row) row.style.opacity = '0.5';
+
+                await apiRequest(`/admin/users/${id}`, { method: 'DELETE' });
+
+                // Refresh list
+                allUsers = allUsers.filter(u => u.id !== id);
+                renderUsers(searchInput.value ? filterUsers(searchInput.value) : allUsers);
+
+            } catch (error) {
+                alert('Failed to delete user: ' + error.message);
+                if (row) row.style.opacity = '1';
+            }
+        }
+
+        function filterUsers(query) {
+            const lowerQuery = query.toLowerCase();
+            return allUsers.filter(user =>
+                user.name.toLowerCase().includes(lowerQuery) ||
+                user.id.toString().includes(lowerQuery)
+            );
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            renderUsers(filterUsers(e.target.value));
+        });
+
+        // Initialize
+        fetchUsers();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Get Started - shifa.ai</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Material Symbols -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Theme Configuration -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2bee9d",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#10221a",
+                        "surface-dark": "#1a332a",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Select arrow styling override */
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body
+    class="font-display antialiased text-slate-900 bg-background-light dark:bg-background-dark dark:text-white transition-colors duration-200">
+    <div class="relative min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 w-full">
+        <!-- Header / Logo Area (Floating above card for brand presence) -->
+        <div class="mb-8 flex flex-col items-center">
+            <div class="flex items-center justify-center bg-primary/20 dark:bg-primary/10 rounded-full p-3 mb-3">
+                <span class="material-symbols-outlined text-primary text-4xl" style="font-size: 32px;">ecg_heart</span>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight text-[#111815] dark:text-white">shifa.ai</h1>
+        </div>
+        <!-- Main Card -->
+        <div
+            class="w-full max-w-[480px] bg-white dark:bg-surface-dark rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden relative">
+            <!-- Progress Bar / Decorative Top -->
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-slate-100 dark:bg-slate-700">
+                <div class="h-full bg-primary w-1/3 rounded-r-full"></div>
+            </div>
+            <div class="p-6 sm:p-8 pt-10">
+                <!-- Headline Section -->
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl sm:text-[28px] font-bold leading-tight mb-3 text-[#111815] dark:text-white">
+                        Welcome</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-relaxed">
+                        Tell us a little about yourself to get better health insights.
+                    </p>
+                </div>
+                <!-- Form Section -->
+                <form class="space-y-5" onsubmit="event.preventDefault();">
+                    <!-- Name Field -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[#111815] dark:text-slate-200 text-sm font-medium leading-normal" for="name">
+                            What should we call you?
+                        </label>
+                        <div class="relative">
+                            <input
+                                class="form-input w-full rounded-xl border border-[#dbe6e1] dark:border-slate-600 bg-white dark:bg-black/20 h-14 px-4 pl-12 text-base text-[#111815] dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm"
+                                id="name" placeholder="e.g., Sarah" type="text" />
+                            <div
+                                class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+                                <span class="material-symbols-outlined text-[20px]">person</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row: Gender & Age -->
+                    <div class="flex flex-col sm:flex-row gap-5">
+                        <!-- Gender Field -->
+                        <div class="flex flex-col gap-2 flex-1">
+                            <label class="text-[#111815] dark:text-slate-200 text-sm font-medium leading-normal"
+                                for="gender">
+                                Gender
+                            </label>
+                            <div class="relative">
+                                <select
+                                    class="form-select w-full rounded-xl border border-[#dbe6e1] dark:border-slate-600 bg-white dark:bg-black/20 h-14 px-4 pl-12 text-base text-[#111815] dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm appearance-none cursor-pointer"
+                                    id="gender">
+                                    <option class="text-slate-400" disabled="" selected="" value="">Select</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="non-binary">Non-binary</option>
+                                    <option value="prefer-not">Prefer not to say</option>
+                                </select>
+                                <div
+                                    class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+                                    <span class="material-symbols-outlined text-[20px]">wc</span>
+                                </div>
+                                <div
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+                                    <span class="material-symbols-outlined text-[24px]">keyboard_arrow_down</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Age Field -->
+                        <div class="flex flex-col gap-2 w-full sm:w-1/3">
+                            <label class="text-[#111815] dark:text-slate-200 text-sm font-medium leading-normal"
+                                for="age">
+                                Age
+                            </label>
+                            <div class="relative">
+                                <input
+                                    class="form-input w-full rounded-xl border border-[#dbe6e1] dark:border-slate-600 bg-white dark:bg-black/20 h-14 px-4 pl-12 text-base text-[#111815] dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm"
+                                    id="age" max="120" min="1" placeholder="25" type="number" />
+                                <div
+                                    class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+                                    <span class="material-symbols-outlined text-[20px]">calendar_today</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- CTA Button -->
+                    <div class="pt-4">
+                        <button
+                            class="group relative flex w-full items-center justify-center overflow-hidden rounded-xl bg-primary hover:bg-[#25dba0] active:scale-[0.98] h-14 px-8 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark"
+                            type="button">
+                            <span
+                                class="absolute inset-0 bg-white/20 opacity-0 transition-opacity group-hover:opacity-100"></span>
+                            <span class="relative text-[#10221a] text-lg font-bold tracking-tight">Start Chat</span>
+                            <span
+                                class="relative material-symbols-outlined ml-2 text-[#10221a] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!-- Footer Area inside card for seamless look -->
+            <div class="bg-slate-50 dark:bg-black/10 p-4 text-center border-t border-slate-100 dark:border-slate-800">
+                <div class="flex items-center justify-center gap-2 text-slate-500 dark:text-slate-400 text-xs">
+                    <span class="material-symbols-outlined text-[16px]">lock</span>
+                    <span>Your data is encrypted and private.</span>
+                </div>
+            </div>
+        </div>
+        <!-- Outside Footer Links -->
+        <div class="mt-8 flex gap-6 text-sm text-slate-400 dark:text-slate-500">
+            <a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+            <a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+        </div>
+    </div>
+    <script src="/assets/js/api.js"></script>
+    <script>
+        const form = document.querySelector('form');
+        const submitBtn = form.querySelector('button');
+        const nameInput = document.getElementById('name');
+        const genderSelect = document.getElementById('gender');
+        const ageInput = document.getElementById('age');
+
+        submitBtn.addEventListener('click', async () => {
+            const name = nameInput.value.trim();
+            const gender = genderSelect.value;
+            const age = parseInt(ageInput.value);
+
+            if (!name || !gender || !age) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span>';
+
+            try {
+                const response = await apiRequest('/users/create', {
+                    method: 'POST',
+                    body: { name, gender, age }
+                });
+
+                localStorage.setItem('shifa_user_id', response.user_id);
+                localStorage.setItem('shifa_user_name', name);
+                window.location.href = '/chat';
+            } catch (error) {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span class="relative text-[#10221a] text-lg font-bold tracking-tight">Start Chat</span><span class="relative material-symbols-outlined ml-2 text-[#10221a] group-hover:translate-x-1 transition-transform">arrow_forward</span>';
+
+                if (error.message.includes('User already exists')) {
+                    alert('A user with this name already exists. Please choose a different name.');
+                    nameInput.focus();
+                } else {
+                    alert('Error creating user: ' + error.message);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
