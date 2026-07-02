@@ -9,11 +9,15 @@ from backend.database import SessionLocal, engine
 from backend.models import Base, User, ChatMessage
 from backend.settings import APP_NAME, MAX_QUESTIONS
 from backend.gemini import get_gemini_response
+from backend.voice.router import router as voice_router
 
 # Create tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title=APP_NAME)
+
+# Live voice health assistant (WebSocket at /ws/voice)
+app.include_router(voice_router)
 
 # CORS Middleware
 app.add_middleware(
@@ -197,6 +201,12 @@ def read_index():
 def read_get_started():
     from fastapi.responses import FileResponse
     return FileResponse("frontend/get-started.html")
+
+
+@app.get("/voice")
+def read_voice():
+    from fastapi.responses import FileResponse
+    return FileResponse("frontend/voice.html")
 
 @app.get("/chat")
 def read_chat():

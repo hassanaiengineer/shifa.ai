@@ -4,16 +4,25 @@ __pycache__/
 *$py.class
 venv/
 .venv/
+env/
+*.egg-info/
 docs/_build/
 
-# Environment variables
+# Environment variables / secrets
 .env
+.env.*
+!.env.example
 
 # Database
 shifa.db
 *.sqlite3
 
-# IDEs
+# Local audio / logs
+*.pcm
+*.wav
+*.log
+
+# OS / IDEs
+.DS_Store
 .vscode/
 .idea/
-frontend/

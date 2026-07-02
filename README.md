@@ -12,13 +12,18 @@ A production-ready MVP for an AI-powered health assistant using FastAPI, SQLAlch
 ## Features
 - **Modern UI**: Clean, responsive design with dark mode support.
 - **User Onboarding**: Simple flow to collect basic user info.
-- **AI Chat**: Powered by Google Gemini Pro with health-specific guardrails.
+- **AI Chat**: Powered by Google Gemini with health-specific guardrails.
+- **🎙️ AI Voice Assistant**: Real-time, voice-to-voice health receptionist — answers questions
+  about clinic services / hours / pricing from a knowledge base (RAG) and **books appointments
+  live**, then ends the call automatically. Open at **`/voice`**.
 - **Chat History**: Messages are saved and reloaded automatically.
 - **Usage Limits**: Configurable limit on free questions (default: 10).
 
 ## Tech Stack
-- **Backend**: Python 3.9+, FastAPI, SQLAlchemy, SQLite, Google Generative AI Python SDK.
-- **Frontend**: Tailwind CSS (CDN), Material Symbols, Vanilla JavaScript.
+- **Backend**: Python 3.10+, FastAPI, SQLAlchemy, SQLite, Google Generative AI.
+- **Voice**: Google **Gemini Live** (native speech-to-speech) · **Pipecat** (real-time audio
+  pipeline) · **LangGraph** (stateful agent) · **RAG** with Gemini embeddings · WebSockets.
+- **Frontend**: Tailwind CSS (CDN), Material Symbols, Vanilla JavaScript, Web Audio API.
 
 ## Setup
 
@@ -55,11 +60,18 @@ uvicorn backend.main:app --reload
 
 The application will be available at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
+- **Chat assistant** → `/get-started`
+- **🎙️ Voice assistant** → [http://127.0.0.1:8000/voice](http://127.0.0.1:8000/voice)
+
+> 🎧 **Use headphones for the voice assistant.** On open speakers the mic picks up the
+> assistant's own voice (echo) and the conversation degrades. Headphones fix this.
+
 ---
 
 ### Folder Structure
 - `backend/`: FastAPI application code.
-- `frontend/`: Static HTML/JS files.
+  - `backend/voice/`: Real-time voice assistant (Gemini Live + Pipecat + LangGraph + RAG).
+- `frontend/`: Static HTML/JS files (`voice.html` = the voice UI).
 - `shifa.db`: SQLite database file (generated on first run).
 
 

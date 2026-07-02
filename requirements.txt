@@ -1,6 +1,13 @@
+# ── Core web app (chat health assistant) ────────────────────────────
 fastapi
-uvicorn
+uvicorn[standard]
 sqlalchemy
 pydantic
 python-dotenv
 google-generativeai
+
+# ── Voice health assistant (real-time speech-to-speech) ─────────────
+pipecat-ai[google,websocket,silero,runner,local-smart-turn-v3]>=0.0.108
+langgraph>=1.0
+google-genai>=1.0
+numpy>=1.26

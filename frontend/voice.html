@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shifa Health — AI Voice Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        :root { --brand: #2563eb; }
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        body { background:
+            radial-gradient(1200px 600px at 50% -10%, #eff6ff 0%, rgba(239,246,255,0) 60%),
+            linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        }
+        @keyframes ring { 0%{transform:scale(0.9);opacity:.6} 70%{opacity:0} 100%{transform:scale(1.7);opacity:0} }
+        .ring { animation: ring 2s cubic-bezier(.22,.61,.36,1) infinite; }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+        .floaty { animation: float 3s ease-in-out infinite; }
+        .grad-orb { background: radial-gradient(circle at 30% 25%, #60a5fa, #2563eb 55%, #1d4ed8 100%); }
+        .fade-in { animation: fadeIn .4s ease both; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col">
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
+        <div class="max-w-5xl mx-auto px-6 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl grad-orb flex items-center justify-center shadow-md shadow-blue-500/25">
+                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2 5 4-12 2 7h6"/></svg>
+                </div>
+                <div>
+                    <h1 class="text-[15px] font-bold tracking-tight text-slate-900 leading-tight">Shifa Health</h1>
+                    <p class="text-[11px] font-medium text-blue-600 tracking-wide">AI Voice Assistant</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-full px-3 py-1.5">
+                <span id="connection-dot" class="w-2 h-2 rounded-full bg-slate-300"></span>
+                <span id="connection-status" class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Offline</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1 w-full max-w-5xl mx-auto px-6 py-10">
+        <div class="text-center max-w-xl mx-auto mb-10">
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-100 rounded-full px-3 py-1 mb-4">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> LIVE VOICE AI DEMO
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">Talk to our AI health assistant</h2>
+            <p class="mt-3 text-slate-500 text-[15px] leading-relaxed">Ask about our services, telehealth, or hours — or book an appointment. Just press the button and speak naturally.</p>
+        </div>
+
+        <div class="grid md:grid-cols-5 gap-6 items-start">
+            <!-- Call card -->
+            <section class="md:col-span-3 bg-white border border-slate-200 rounded-3xl shadow-xl shadow-slate-200/50 p-8 flex flex-col items-center">
+                <div class="relative flex items-center justify-center w-56 h-56 mb-2">
+                    <div id="ring-1" class="absolute w-40 h-40 rounded-full bg-blue-400/20 hidden"></div>
+                    <div id="ring-2" class="absolute w-40 h-40 rounded-full bg-blue-400/20 hidden"></div>
+                    <div id="mic-orb" class="relative w-36 h-36 rounded-full grad-orb shadow-2xl shadow-blue-500/30 flex items-center justify-center floaty">
+                        <svg id="mic-icon" class="w-14 h-14 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <p id="assistant-activity" class="text-sm font-semibold text-slate-400 mb-5">Ready when you are</p>
+
+                <button id="btn-call" class="w-full sm:w-auto px-10 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-[.98] text-white font-semibold text-[15px] shadow-lg shadow-blue-600/25 transition flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z"/></svg>
+                    <span id="btn-call-label">Start Call</span>
+                </button>
+
+                <!-- Visualizer -->
+                <div class="mt-7 w-full h-16 bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden">
+                    <canvas id="visualizer" class="w-full h-full"></canvas>
+                </div>
+
+                <!-- Hidden ws url (used by script) -->
+                <input id="server-url" type="hidden" />
+            </section>
+
+            <!-- Side: live agent state (the "wow" panel) -->
+            <aside class="md:col-span-2 space-y-6">
+                <!-- Agent flow stepper -->
+                <div class="bg-white border border-slate-200 rounded-3xl shadow-lg shadow-slate-200/40 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Agent Flow</h3>
+                        <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 rounded-full px-2 py-0.5">LANGGRAPH</span>
+                    </div>
+                    <ol id="stepper" class="space-y-3"></ol>
+                </div>
+
+                <!-- Collected info -->
+                <div class="bg-white border border-slate-200 rounded-3xl shadow-lg shadow-slate-200/40 p-6">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Collected Information</h3>
+                    <dl class="space-y-2 text-sm">
+                        <div class="flex justify-between"><dt class="text-slate-400">Name</dt><dd id="f-name" class="font-semibold text-slate-700">—</dd></div>
+                        <div class="flex justify-between"><dt class="text-slate-400">Reason</dt><dd id="f-reason" class="font-semibold text-slate-700">—</dd></div>
+                        <div class="flex justify-between"><dt class="text-slate-400">Date</dt><dd id="f-date" class="font-semibold text-slate-700">—</dd></div>
+                        <div class="flex justify-between"><dt class="text-slate-400">Time</dt><dd id="f-time" class="font-semibold text-slate-700">—</dd></div>
+                    </dl>
+                    <!-- Reason row stays but is optional; it only fills if the caller mentions it. -->
+                </div>
+
+                <!-- Booking confirmation (hidden until booked) -->
+                <div id="booking-card" class="hidden bg-gradient-to-br from-emerald-50 to-white border border-emerald-200 rounded-3xl shadow-lg p-6 fade-in">
+                    <div class="flex items-center gap-2 mb-2">
+                        <svg class="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.5 7.5a1 1 0 01-1.4 0L3.3 9.7a1 1 0 011.4-1.4l3.3 3.3 6.8-6.8a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
+                        <h3 class="text-sm font-bold text-emerald-700">Appointment Booked</h3>
+                    </div>
+                    <p class="text-sm text-slate-600">Confirmation code</p>
+                    <p id="booking-ref" class="text-lg font-extrabold tracking-wider text-emerald-700">—</p>
+                </div>
+
+                <!-- Live session log -->
+                <div class="bg-white border border-slate-200 rounded-3xl shadow-lg shadow-slate-200/40 p-6">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Live Session</h3>
+                    <div id="event-log" class="text-xs text-slate-500 space-y-2 max-h-36 overflow-y-auto">
+                        <div class="text-slate-400">Press <span class="font-semibold text-slate-600">Start Call</span> and allow your microphone to begin.</div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Capability strip -->
+        <div class="mt-10 grid sm:grid-cols-3 gap-4">
+            <div class="bg-white/70 border border-slate-200 rounded-2xl p-4 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">🎙️</div>
+                <div><p class="text-sm font-semibold text-slate-800">Real-time voice</p><p class="text-xs text-slate-400">Natural, low-latency speech</p></div>
+            </div>
+            <div class="bg-white/70 border border-slate-200 rounded-2xl p-4 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">📚</div>
+                <div><p class="text-sm font-semibold text-slate-800">Knowledge-aware</p><p class="text-xs text-slate-400">Answers from your data (RAG)</p></div>
+            </div>
+            <div class="bg-white/70 border border-slate-200 rounded-2xl p-4 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">🤖</div>
+                <div><p class="text-sm font-semibold text-slate-800">Takes action</p><p class="text-xs text-slate-400">Books appointments live</p></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-6 text-slate-400 text-xs border-t border-slate-200 bg-white/50">
+        Live Voice AI Demo · Powered by real-time speech-to-speech AI
+    </footer>
+
+    <script>
+        const TARGET_SAMPLE_RATE = 16000;
+
+        const serverUrlInput = document.getElementById("server-url");
+        const btnCall = document.getElementById("btn-call");
+        const btnCallLabel = document.getElementById("btn-call-label");
+        const micIcon = document.getElementById("mic-icon");
+        const micOrb = document.getElementById("mic-orb");
+        const connectionDot = document.getElementById("connection-dot");
+        const connectionStatus = document.getElementById("connection-status");
+        const assistantActivity = document.getElementById("assistant-activity");
+        const ring1 = document.getElementById("ring-1");
+        const ring2 = document.getElementById("ring-2");
+        const eventLog = document.getElementById("event-log");
+        const canvas = document.getElementById("visualizer");
+        const ctx = canvas.getContext("2d");
+
+        serverUrlInput.value = (() => {
+            const proto = window.location.protocol === "https:" ? "wss" : "ws";
+            return `${proto}://${window.location.host}/ws/voice`;
+        })();
+
+        let audioContext = null, micMonitorGain = null, micStream = null, micSource = null, scriptProcessor = null;
+        let websocket = null, isConnected = false, isRecording = false;
+        let playbackTime = 0, activeSources = [], analyser = null, dataArray = null;
+        let userEnded = false, reconnectAttempts = 0;
+        const MAX_RECONNECT = 3;
+
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth * window.devicePixelRatio;
+            canvas.height = canvas.clientHeight * window.devicePixelRatio;
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        function addLog(text, type = "system") {
+            const div = document.createElement("div");
+            const time = new Date().toLocaleTimeString();
+            let color = "text-slate-500";
+            if (type === "bot") color = "text-blue-600 font-medium";
+            if (type === "user") color = "text-emerald-600 font-medium";
+            if (type === "error") color = "text-red-500";
+            div.className = `${color} fade-in leading-relaxed`;
+            div.innerHTML = `<span class="text-slate-300 mr-2">${time}</span>${text}`;
+            eventLog.appendChild(div);
+            eventLog.scrollTop = eventLog.scrollHeight;
+        }
+
+        function updateVoiceState(state) {
+            ring1.classList.add("hidden"); ring1.classList.remove("ring");
+            ring2.classList.add("hidden"); ring2.classList.remove("ring");
+            micOrb.classList.remove("floaty");
+            if (state === "idle") {
+                assistantActivity.textContent = isConnected ? "Listening…" : "Ready when you are";
+                micOrb.classList.add("floaty");
+            } else if (state === "listening") {
+                assistantActivity.textContent = "Listening to you…";
+                ring1.classList.remove("hidden"); ring1.classList.add("ring");
+            } else if (state === "speaking") {
+                assistantActivity.textContent = "Assistant is speaking…";
+                ring1.classList.remove("hidden"); ring1.classList.add("ring");
+                ring2.classList.remove("hidden"); ring2.classList.add("ring");
+            }
+        }
+
+        function setCallUI(connected) {
+            if (connected) {
+                btnCall.classList.remove("bg-blue-600","hover:bg-blue-700","shadow-blue-600/25");
+                btnCall.classList.add("bg-red-500","hover:bg-red-600","shadow-red-500/25");
+                btnCallLabel.textContent = "End Call";
+                connectionDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                connectionStatus.textContent = "Connected";
+                connectionStatus.classList.remove("text-slate-500"); connectionStatus.classList.add("text-emerald-600");
+            } else {
+                btnCall.classList.add("bg-blue-600","hover:bg-blue-700","shadow-blue-600/25");
+                btnCall.classList.remove("bg-red-500","hover:bg-red-600","shadow-red-500/25");
+                btnCallLabel.textContent = "Start Call";
+                connectionDot.className = "w-2 h-2 rounded-full bg-slate-300";
+                connectionStatus.textContent = "Offline";
+                connectionStatus.classList.add("text-slate-500"); connectionStatus.classList.remove("text-emerald-600");
+            }
+        }
+
+        btnCall.addEventListener("click", () => {
+            if (isConnected) { userEnded = true; disconnect(); }
+            else { userEnded = false; reconnectAttempts = 0; connect(); }
+        });
+
+        function cleanupMedia() {
+            stopMicrophone();
+            clearPlayback();
+            if (audioContext) { try { audioContext.close(); } catch (_) {} audioContext = null; }
+        }
+
+        async function connect() {
+            const url = serverUrlInput.value.trim();
+            addLog("Connecting…");
+            btnCall.disabled = true;
+            try {
+                websocket = new WebSocket(url);
+                websocket.binaryType = "arraybuffer";
+
+                websocket.onopen = async () => {
+                    isConnected = true;
+                    reconnectAttempts = 0;
+                    btnCall.disabled = false;
+                    setCallUI(true);
+
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: TARGET_SAMPLE_RATE });
+                    await audioContext.resume();
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 256;
+                    dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                    websocket.send(JSON.stringify({ event: "start", start: { session_id: `session_${Date.now()}` } }));
+                    websocket.send(JSON.stringify({ event: "connected" }));
+                    addLog("Connected. Say hello!", "system");
+                    updateVoiceState("idle");
+                    drawVisualizer();
+                    // One-click demo: auto-start the mic.
+                    await startMicrophone();
+                };
+
+                websocket.onmessage = (event) => {
+                    let message; try { message = JSON.parse(event.data); } catch (_) { return; }
+                    if (message.event === "media") {
+                        playPCM(base64ToArrayBuffer(message.media.payload), TARGET_SAMPLE_RATE);
+                    } else if (message.event === "clear") {
+                        clearPlayback();
+                        updateVoiceState(isRecording ? "listening" : "idle");
+                    } else if (message.event === "agent_state") {
+                        updateAgentState(message.data);
+                    } else if (message.event === "call_ended") {
+                        // Server is ending the call intentionally (after booking) —
+                        // don't auto-reconnect.
+                        userEnded = true;
+                        assistantActivity.textContent = "Call complete ✓";
+                        addLog("Appointment booked — call complete.", "bot");
+                    }
+                };
+                websocket.onerror = () => addLog("Connection error.", "error");
+                websocket.onclose = (e) => {
+                    isConnected = false;
+                    cleanupMedia();
+                    if (!userEnded && reconnectAttempts < MAX_RECONNECT) {
+                        reconnectAttempts++;
+                        addLog(`Connection dropped — reconnecting (${reconnectAttempts}/${MAX_RECONNECT})…`, "error");
+                        assistantActivity.textContent = "Reconnecting…";
+                        connectionDot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+                        connectionStatus.textContent = "Reconnecting";
+                        setTimeout(() => { if (!userEnded) connect(); }, 900);
+                    } else {
+                        addLog("Call ended.", "system");
+                        disconnect(true);
+                    }
+                };
+            } catch (err) {
+                addLog(`Failed to connect: ${err.message}`, "error");
+                disconnect();
+            }
+        }
+
+        function disconnect(fromOnClose = false) {
+            stopMicrophone();
+            clearPlayback();
+            if (!fromOnClose && websocket) websocket.close();
+            websocket = null;
+            isConnected = false;
+            btnCall.disabled = false;
+            setCallUI(false);
+            if (audioContext) { audioContext.close(); audioContext = null; }
+            updateVoiceState("idle");
+        }
+
+        async function startMicrophone() {
+            if (!isConnected || !audioContext) return;
+            try {
+                micStream = await navigator.mediaDevices.getUserMedia({
+                    audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true }
+                });
+                micSource = audioContext.createMediaStreamSource(micStream);
+                micSource.connect(analyser);
+                scriptProcessor = audioContext.createScriptProcessor(1024, 1, 1);
+                micSource.connect(scriptProcessor);
+                micMonitorGain = audioContext.createGain();
+                micMonitorGain.gain.value = 0;
+                scriptProcessor.connect(micMonitorGain);
+                micMonitorGain.connect(audioContext.destination);
+                scriptProcessor.onaudioprocess = (e) => {
+                    if (!websocket || websocket.readyState !== WebSocket.OPEN) return;
+                    const pcm = floatToInt16(e.inputBuffer.getChannelData(0));
+                    websocket.send(JSON.stringify({ event: "media", media: { payload: arrayBufferToBase64(pcm.buffer) } }));
+                };
+                isRecording = true;
+                updateVoiceState("listening");
+                addLog("Microphone live.", "user");
+            } catch (err) {
+                addLog(`Microphone error: ${err.message}`, "error");
+            }
+        }
+
+        function stopMicrophone() {
+            if (scriptProcessor) { scriptProcessor.disconnect(); scriptProcessor = null; }
+            if (micMonitorGain) { micMonitorGain.disconnect(); micMonitorGain = null; }
+            if (micSource) { micSource.disconnect(); micSource = null; }
+            if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+            isRecording = false;
+        }
+
+        function floatToInt16(floatArray) {
+            const out = new Int16Array(floatArray.length);
+            for (let i = 0; i < floatArray.length; i++) {
+                const s = Math.max(-1, Math.min(1, floatArray[i]));
+                out[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+            }
+            return out;
+        }
+
+        function playPCM(arrayBuffer, sampleRate) {
+            if (!audioContext) return;
+            updateVoiceState("speaking");
+            const int16 = new Int16Array(arrayBuffer);
+            const float32 = new Float32Array(int16.length);
+            for (let i = 0; i < int16.length; i++) float32[i] = int16[i] / 32768;
+            const audioBuffer = audioContext.createBuffer(1, float32.length, sampleRate);
+            audioBuffer.getChannelData(0).set(float32);
+            const source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(analyser);
+            source.connect(audioContext.destination);
+            const now = audioContext.currentTime;
+            if (playbackTime - now > 0.4) playbackTime = now;
+            if (playbackTime < now) playbackTime = now;
+            source.start(playbackTime);
+            activeSources.push(source);
+            playbackTime += audioBuffer.duration;
+            source.onended = () => {
+                activeSources = activeSources.filter(s => s !== source);
+                if (!activeSources.length) updateVoiceState(isRecording ? "listening" : "idle");
+            };
+        }
+
+        function clearPlayback() {
+            for (const s of activeSources) { try { s.stop(); } catch (_) {} }
+            activeSources = []; playbackTime = 0;
+            updateVoiceState(isRecording ? "listening" : "idle");
+        }
+
+        function base64ToArrayBuffer(b64) {
+            const bin = window.atob(b64); const len = bin.length; const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
+            return bytes.buffer;
+        }
+        function arrayBufferToBase64(buffer) {
+            let bin = ""; const bytes = new Uint8Array(buffer);
+            for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
+            return window.btoa(bin);
+        }
+
+        function drawVisualizer() {
+            if (!isConnected || !analyser) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
+            requestAnimationFrame(drawVisualizer);
+            analyser.getByteFrequencyData(dataArray);
+            const width = canvas.width / window.devicePixelRatio, height = canvas.height / window.devicePixelRatio;
+            ctx.clearRect(0, 0, width, height);
+            const bars = analyser.frequencyBinCount;
+            const barWidth = (width / bars) * 2.2;
+            let x = 0;
+            for (let i = 0; i < bars; i++) {
+                const barHeight = (dataArray[i] / 255) * (height * 0.85);
+                const g = ctx.createLinearGradient(0, height, 0, 0);
+                g.addColorStop(0, "rgba(37,99,235,0.25)");
+                g.addColorStop(1, "rgba(96,165,250,0.95)");
+                ctx.fillStyle = g;
+                const y = (height - barHeight) / 2;
+                if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(x, y, barWidth - 2, Math.max(barHeight, 2), 3); ctx.fill(); }
+                else ctx.fillRect(x, y, barWidth - 2, Math.max(barHeight, 2));
+                x += barWidth;
+            }
+        }
+
+        // ----- Live agent state visualization -----
+        const STEPS = ["Greeting", "Understanding needs", "Collecting details", "Confirming", "Booked"];
+        const STAGE_TO_STEP = { greeting: 0, identifying: 0, answering: 1, collecting: 2, confirming: 3, booked: 4 };
+        const stepperEl = document.getElementById("stepper");
+
+        function renderStepper(activeIdx) {
+            stepperEl.innerHTML = "";
+            STEPS.forEach((label, i) => {
+                const done = i < activeIdx, active = i === activeIdx;
+                const li = document.createElement("li");
+                li.className = "flex items-center gap-3";
+                const dot = done
+                    ? `<span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs">✓</span>`
+                    : active
+                    ? `<span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold ring-4 ring-blue-100">${i + 1}</span>`
+                    : `<span class="w-6 h-6 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xs">${i + 1}</span>`;
+                const text = active
+                    ? `<span class="text-sm font-semibold text-blue-700">${label}</span>`
+                    : done
+                    ? `<span class="text-sm text-slate-500">${label}</span>`
+                    : `<span class="text-sm text-slate-400">${label}</span>`;
+                li.innerHTML = dot + text;
+                stepperEl.appendChild(li);
+            });
+        }
+
+        function setField(id, val) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = val || "—";
+            if (val) el.classList.add("text-blue-700");
+        }
+
+        function updateAgentState(d) {
+            renderStepper(STAGE_TO_STEP[d.stage] ?? 0);
+            setField("f-name", d.caller_name);
+            setField("f-reason", d.reason);
+            setField("f-date", d.preferred_date);
+            setField("f-time", d.preferred_time);
+            if (d.booking_ref) {
+                document.getElementById("booking-card").classList.remove("hidden");
+                document.getElementById("booking-ref").textContent = d.booking_ref;
+                addLog(`Appointment booked · ${d.booking_ref}`, "bot");
+            }
+        }
+
+        renderStepper(-1);
+        updateVoiceState("idle");
+        setCallUI(false);
+    </script>
+</body>
+</html>
