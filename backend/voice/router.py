@@ -45,6 +45,7 @@ from pipecat.transports.websocket.fastapi import (
 
 from backend.voice.browser_serializer import BrowserLiveFrameSerializer, DEFAULT_SAMPLE_RATE
 from backend.voice.rag import KnowledgeBase
+from backend.store import save_appointment
 
 router = APIRouter()
 
@@ -235,6 +236,20 @@ async def websocket_voice(websocket: WebSocket):
             f"📅 BOOKING: {state['caller_name']} | {state['preferred_date']} "
             f"{state['preferred_time']} | {state['reason']} | ref {ref}"
         )
+        # Persist so it shows up in the SaaS dashboard.
+        try:
+            await asyncio.get_event_loop().run_in_executor(
+                None,
+                save_appointment,
+                ref,
+                state["caller_name"],
+                state["reason"],
+                state["preferred_date"],
+                state["preferred_time"],
+                "voice",
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(f"Failed to persist appointment: {exc}")
         await push_state()
         if all(state[k] for k in ("caller_name", "preferred_date", "preferred_time")):
             hangup.armed = True

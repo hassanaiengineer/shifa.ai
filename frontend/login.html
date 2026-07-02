@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign in · Shifa AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = { theme: { extend: {
+        colors: { brand:{DEFAULT:'#10b981','600':'#059669','700':'#047857','400':'#34d399'} },
+        fontFamily:{ display:['"Space Grotesk"','sans-serif'], sans:['Inter','sans-serif'] } } } }
+    </script>
+    <style>
+      *{font-family:'Inter',sans-serif}.font-display{font-family:'Space Grotesk',sans-serif}
+      .glow{background:radial-gradient(600px 400px at 20% 10%,rgba(52,211,153,.25),transparent 60%),radial-gradient(500px 400px at 90% 90%,rgba(16,185,129,.2),transparent 55%)}
+    </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800">
+    <div class="min-h-screen grid lg:grid-cols-2">
+        <!-- Brand panel -->
+        <div class="relative hidden lg:flex flex-col justify-between p-12 bg-[#07130f] text-white overflow-hidden">
+            <div class="absolute inset-0 glow"></div>
+            <a href="/" class="relative flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-400 to-brand-700 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2 5 4-12 2 7h6"/></svg>
+                </div>
+                <span class="font-display text-lg font-bold">Shifa<span class="text-brand-400">AI</span></span>
+            </a>
+            <div class="relative max-w-md">
+                <h1 class="font-display text-4xl font-bold leading-tight">The AI front desk for modern healthcare.</h1>
+                <p class="mt-4 text-slate-300 leading-relaxed">Chatbots, real-time voice assistants, and live appointment booking — one intelligent platform.</p>
+                <div class="mt-8 space-y-3 text-sm text-slate-300">
+                    <div class="flex items-center gap-3"><span class="text-brand-400">✓</span> 24/7 AI voice receptionist</div>
+                    <div class="flex items-center gap-3"><span class="text-brand-400">✓</span> Knowledge-aware chatbot (RAG)</div>
+                    <div class="flex items-center gap-3"><span class="text-brand-400">✓</span> Automated appointment booking</div>
+                </div>
+            </div>
+            <p class="relative text-xs text-slate-500">© 2026 Shifa AI. Crafted by Hassan Khan.</p>
+        </div>
+
+        <!-- Form -->
+        <div class="flex items-center justify-center p-6 sm:p-12">
+            <div class="w-full max-w-sm">
+                <a href="/" class="lg:hidden flex items-center gap-2 mb-8 justify-center">
+                    <span class="font-display text-xl font-bold text-slate-900">Shifa<span class="text-brand">AI</span></span>
+                </a>
+                <h2 class="font-display text-2xl font-bold text-slate-900">Welcome back</h2>
+                <p class="mt-1 text-sm text-slate-500">Sign in to your dashboard.</p>
+
+                <div id="err" class="hidden mt-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2"></div>
+
+                <form id="form" class="mt-6 space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Email</label>
+                        <input id="email" type="email" required value="demo@shifa.ai" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand transition" placeholder="you@business.com" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Password</label>
+                        <input id="password" type="password" required value="demo1234" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand transition" placeholder="••••••••" />
+                    </div>
+                    <button id="submit" type="submit" class="w-full rounded-xl bg-brand hover:bg-brand-600 text-white font-semibold py-3 text-sm shadow-lg shadow-brand/25 active:scale-[.98] transition">Sign in</button>
+                </form>
+
+                <div class="mt-4 text-center text-xs text-slate-400">Demo account is pre-filled — just click <span class="font-semibold text-slate-600">Sign in</span>.</div>
+                <p class="mt-6 text-center text-sm text-slate-500">New here? <a href="/signup" class="font-semibold text-brand hover:text-brand-600">Create an account</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('form');
+        const errEl = document.getElementById('err');
+        const btn = document.getElementById('submit');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errEl.classList.add('hidden');
+            btn.disabled = true; btn.textContent = 'Signing in…';
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST', headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ email: email.value, password: password.value })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Login failed');
+                localStorage.setItem('shifa_token', data.token);
+                localStorage.setItem('shifa_name', data.name);
+                window.location.href = '/dashboard';
+            } catch (err) {
+                errEl.textContent = err.message; errEl.classList.remove('hidden');
+                btn.disabled = false; btn.textContent = 'Sign in';
+            }
+        });
+    </script>
+</body>
+</html>
