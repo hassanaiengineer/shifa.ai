@@ -26,3 +26,6 @@ shifa.db
 .DS_Store
 .vscode/
 .idea/
+
+# Claude Code session dir
+.claude/

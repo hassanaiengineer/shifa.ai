@@ -4,10 +4,17 @@ uvicorn[standard]
 sqlalchemy
 pydantic
 python-dotenv
-google-generativeai
+
+# ── AI (shared by chat + voice, modern unified SDK) ─────────────────
+google-genai>=1.0
 
 # ── Voice health assistant (real-time speech-to-speech) ─────────────
-pipecat-ai[google,websocket,silero,runner,local-smart-turn-v3]>=0.0.108
+# Gemini Live handles VAD + turn-taking server-side, so we skip the heavy
+# local `silero` / `local-smart-turn-v3` extras.
+# Pin numba/llvmlite to versions with prebuilt wheels — newer numba resolves to
+# a release-candidate llvmlite that has no wheel and fails to build from source.
+numba==0.61.2
+llvmlite==0.44.0
+pipecat-ai[google,websocket,runner]>=0.0.108
 langgraph>=1.0
-google-genai>=1.0
 numpy>=1.26

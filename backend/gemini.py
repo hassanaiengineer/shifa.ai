@@ -1,7 +1,7 @@
-import google.generativeai as genai
-from backend.settings import GEMINI_API_KEY
+from google import genai
+from google.genai import types
 
-genai.configure(api_key=GEMINI_API_KEY)
+from backend.settings import GEMINI_API_KEY
 
 SYSTEM_PROMPT = """
 You are Shifa AI, a general health information assistant.
@@ -30,16 +30,18 @@ Guidance:
 - If symptoms sound serious or worsening, gently suggest seeking medical care
 
 Always prioritize safety, clarity, and responsible health education.
-
-
 """
 
-model = genai.GenerativeModel(
-    model_name="gemini-2.0-flash",
-    system_instruction=SYSTEM_PROMPT
-)
+# Unified on the modern google-genai SDK (shared with the voice assistant),
+# which avoids the protobuf conflict the legacy google-generativeai SDK caused.
+_client = genai.Client(api_key=GEMINI_API_KEY)
+_MODEL = "gemini-2.5-flash"
 
 
 def get_gemini_response(message: str) -> str:
-    response = model.generate_content(message)
-    return response.text.strip()
+    response = _client.models.generate_content(
+        model=_MODEL,
+        contents=message,
+        config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT),
+    )
+    return (response.text or "").strip()
